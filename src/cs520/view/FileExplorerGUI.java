@@ -1,6 +1,10 @@
 package cs520.view;
 
 import java.awt.BorderLayout;
+import java.beans.PropertyChangeEvent;      
+//  import for Observer callback event
+import java.beans.PropertyChangeListener;  
+ //  import for Observer interface
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -12,7 +16,7 @@ import javax.swing.JOptionPane;
 import cs520.model.FileExplorerModel;
 
 
-public class FileExplorerGUI extends JFrame 
+public class FileExplorerGUI extends JFrame implements PropertyChangeListener // implementing PropertyChangeListener to act as Observer
 {
 	public static final String APP_TITLE = "File Explorer";
 	public static final String ABOUT_TITLE = "About";
@@ -149,6 +153,14 @@ public class FileExplorerGUI extends JFrame
 	
 	public FileExplorerListView getFileExplorerFileListing() {
 		return this.centerPanel;
+	}
+
+	//  Observer callback method this is called automatically when model fires a property change
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		if (evt.getSource() instanceof FileExplorerModel) {
+			this.update((FileExplorerModel) evt.getSource()); // ADDED: delegate to existing update method
+		}
 	}
 	
 	public void update(FileExplorerModel model) {
