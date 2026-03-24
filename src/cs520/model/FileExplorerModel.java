@@ -1,11 +1,14 @@
 package cs520.model;
-
+import java.beans.PropertyChangeListener;   // Adding for Observer interface
+import java.beans.PropertyChangeSupport;    // Adding import for Observable helper class
 
 public class FileExplorerModel 
 {
 	public static final String DESKTOP_FOLDER_NAME = "Desktop";
 	public static final String DOCUMENTS_FOLDER_NAME = "Documents";
 	public static final String DOWNLOADS_FOLDER_NAME = "Downloads";
+	public static final String CURRENT_OPEN_FOLDER_PROPERTY = "currentOpenFolder"; 
+	// property name constant for firePropertyChange
 	
 	private String osName;
 	private String osVersion;
@@ -14,6 +17,8 @@ public class FileExplorerModel
 	private String documentsFolderName;
 	private String downloadsFolderName;	
 	private FileModel currentOpenFolder;
+	private PropertyChangeSupport propertyChangeSupport; 
+	// this  manages listeners and fires events
 	
 	public FileExplorerModel() {
 		this.osName = System.getProperty("os.name");
@@ -23,6 +28,17 @@ public class FileExplorerModel
 		this.documentsFolderName = this.homeFolderName + System.getProperty("file.separator") + DOCUMENTS_FOLDER_NAME;
 		this.downloadsFolderName = this.homeFolderName + System.getProperty("file.separator") + DOWNLOADS_FOLDER_NAME;
 		this.currentOpenFolder = null;
+		this.propertyChangeSupport = new PropertyChangeSupport(this); 
+	}
+	
+	// this will allow observers ileExplorerGUI to register for property change notifications
+	public void addPropertyChangeListener(PropertyChangeListener listener) {
+		this.propertyChangeSupport.addPropertyChangeListener(listener);
+	}
+	
+	// here as well will allow observerc to unregister
+	public void removePropertyChangeListener(PropertyChangeListener listener) {
+		this.propertyChangeSupport.removePropertyChangeListener(listener);
 	}
 	
 	public String getOSName() {
@@ -58,6 +74,8 @@ public class FileExplorerModel
 		if ((currentOpenFolder != null) && (! currentOpenFolder.isDirectory())) {
 			throw new UnsupportedOperationException("Cannot go to file " + currentOpenFolder.getName());
 		}
+		FileModel oldFolder = this.currentOpenFolder; // ADDED: save old value before updating
 		this.currentOpenFolder = currentOpenFolder;
+		this.propertyChangeSupport.firePropertyChange(CURRENT_OPEN_FOLDER_PROPERTY, oldFolder, this.currentOpenFolder); // ADDED: notify all registered listeners of the change
 	}
 }

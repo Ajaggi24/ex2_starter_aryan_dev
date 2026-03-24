@@ -1,0 +1,5 @@
+Testcase: cs520.view.FileExplorerViewTests
+Test: testUpdateNotNull() took 3 sec(s)
+Test: testFileExplorerGUI() took 186 milli sec(s)
+Test: testUpdateNotNullThenNull() took 203 milli sec(s)
+Tests run: 3, Failures: 0, Skipped: 0, Aborted: 0, Time elapsed: 3 sec(s)
