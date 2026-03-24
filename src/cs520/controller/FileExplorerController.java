@@ -16,6 +16,9 @@ public class FileExplorerController
 	public FileExplorerController() {
 		this.model = new FileExplorerModel();
 		this.view = new FileExplorerGUI();
+
+		this.model.addPropertyChangeListener(this.view); 
+		// register view as Observer of model
 		
 		view.getAboutMenuItem().addActionListener(e -> {
 			view.showAboutDialog(model);
@@ -75,8 +78,8 @@ public class FileExplorerController
 	}
 
 	public void go(FileModel currentOpenFolder) {
-		this.model.go(currentOpenFolder);
-		this.view.update(this.model);
+		this.model.go(currentOpenFolder); // model.go() will now directluy fire propertyChange, which automatically updates the view
+		// REMOVED: this.view.update(this.model) 
 	}
 	
 	public void openFolder() {
@@ -89,45 +92,46 @@ public class FileExplorerController
 	
 	public void refresh() {
 		// The model will load the folder on demand.
-		this.view.update(this.model);
+		this.view.update(this.model); 
 	}
 	
 	public void closeFolder() {
-		this.model.go(null);
-		this.view.update(this.model);
+		this.model.go(null); // model.go() direcly fires propertyChange, which automatically updates the view
+		// REMOVED: this.view.update(this.model) - no longer needed
 	}
 	
 	public void toggleShowHiddenResources() {
 		view.toggleShowHiddenResources();
-		view.update(model);
+		view.update(model); 
 	}
 	
 	public void goEnclosingFolder() {
 		if (this.model.getCurrentOpenFolder() != null) {
 			FileModel enclosingFolder = (FileModel)this.model.getCurrentOpenFolder().getParentFile();
 			if (enclosingFolder != null) {
-				this.go(enclosingFolder);
+				this.go(enclosingFolder); // go will  call model.go  which fires propertyChange automatically
 			}
 		}
 	}
 	
 	public void goDesktopFolder() {
 		FileModel desktopFolderModel = new FileModel(model.getDesktopFolderName());
-		this.go(desktopFolderModel);		
+		this.go(desktopFolderModel); // go wil call model.go which fires propertyChange automatically
 	}
 
 	public void goDocumentsFolder() {
 		FileModel documentsFolderModel = new FileModel(model.getDocumentsFolderName());
-		this.go(documentsFolderModel);		
+		this.go(documentsFolderModel); 
 	}
 	
 	public void goDownloadsFolder() {
 		FileModel downloadsFolderModel = new FileModel(model.getDownloadsFolderName());
-		this.go(downloadsFolderModel);
+		this.go(downloadsFolderModel); 
 	}
 
 	public void goHomeFolder() {
 		FileModel homeFolderModel = new FileModel(model.getHomeFolderName());
-		this.go(homeFolderModel);
-	}
+		this.go(homeFolderModel); 
+}
+
 }
